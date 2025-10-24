@@ -1,5 +1,5 @@
 name: MAUI Unit Tests
- 
+
 on:
   push:
     branches: ["**"]
@@ -7,27 +7,25 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
- 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Of windows-latest/macOS-latest als specifiek platform nodig is
+    runs-on: windows-latest
+
     steps:
       - name: Haal de repository op
         uses: actions/checkout@v4
- 
+
       - name: Installeer .NET SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'  # Gebruik de juiste versie voor MAUI
- 
-      - name: Installeer MAUI workloads
-        run: dotnet workload install maui-android
- 
-      - name: Herstel afhankelijkheden
-        run: dotnet restore
- 
-      - name: Bouw de applicatie
-        run: dotnet build --configuration Release --no-restore
- 
-      - name: Voer unit tests uit
-        run: dotnet test --configuration Release --no-restore --no-build --verbosity normal
+          dotnet-version: '8.0.x'
+
+      # Belangrijk: test alleen het testproject; geen MAUI/iOS workload nodig
+      - name: Restore tests
+        run: dotnet restore ./Grocery.Tests/Grocery.Tests.csproj
+
+      - name: Build tests (Release)
+        run: dotnet build ./Grocery.Tests/Grocery.Tests.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test ./Grocery.Tests/Grocery.Tests.csproj --configuration Release --no-build --verbosity normal
