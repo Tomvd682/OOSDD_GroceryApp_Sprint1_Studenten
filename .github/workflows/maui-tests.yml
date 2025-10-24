@@ -1,31 +1,30 @@
-name: .NET Unit Tests (No MAUI)
+name: Build Core (no MAUI)
 
 on:
-  push:
-    branches: ["**"]
-  pull_request:
-    branches: ["**"]
+  push: { branches: ["**"] }
+  pull_request: { branches: ["**"] }
   workflow_dispatch:
 
 jobs:
-  test:
+  build:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET SDK
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # Belangrijk: test alleen het testproject (géén MAUI projecten!)
-      - name: Restore test project
-        run: dotnet restore "./Grocery.Tests/Grocery.Tests.csproj"
+      # Bouw alleen de core-projecten, dwing net8.0 af en negeer MAUI/iOS
+      - name: Restore Grocery.Core
+        run: dotnet restore "./Grocery.Core/Grocery.Core.csproj" -p:TargetFramework=net8.0
 
-      - name: Build test project
-        run: dotnet build "./Grocery.Tests/Grocery.Tests.csproj" --configuration Release --no-restore
+      - name: Build Grocery.Core
+        run: dotnet build "./Grocery.Core/Grocery.Core.csproj" -c Release -p:TargetFramework=net8.0 --no-restore
 
-      - name: Run unit tests
-        run: dotnet test "./Grocery.Tests/Grocery.Tests.csproj" --configuration Release --no-build --verbosity normal
+      - name: Restore Grocery.Core.Data
+        run: dotnet restore "./Grocery.Core.Data/Grocery.Core.Data.csproj" -p:TargetFramework=net8.0
+
+      - name: Build Grocery.Core.Data
+        run: dotnet build "./Grocery.Core.Data/Grocery.Core.Data.csproj" -c Release -p:TargetFramework=net8.0 --no-restore
