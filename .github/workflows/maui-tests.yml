@@ -20,12 +20,13 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # Belangrijk: test alleen het testproject; geen MAUI/iOS workload nodig
-      - name: Restore tests
-        run: dotnet restore ./Grocery.Tests/Grocery.Tests.csproj
+      # Let op: GEEN MAUI workload installeren
 
-      - name: Build tests (Release)
-        run: dotnet build ./Grocery.Tests/Grocery.Tests.csproj --configuration Release --no-restore
+      - name: Restore alleen testproject (net8.0)
+        run: dotnet restore ./Grocery.Tests/Grocery.Tests.csproj --framework net8.0
 
-      - name: Run tests
-        run: dotnet test ./Grocery.Tests/Grocery.Tests.csproj --configuration Release --no-build --verbosity normal
+      - name: Build tests (Release, net8.0)
+        run: dotnet build ./Grocery.Tests/Grocery.Tests.csproj -c Release -f net8.0 --no-restore
+
+      - name: Run tests (Release, net8.0)
+        run: dotnet test ./Grocery.Tests/Grocery.Tests.csproj -c Release -f net8.0 --no-build --verbosity normal
