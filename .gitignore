@@ -363,3 +363,11 @@ MigrationBackup/
 FodyWeavers.xsd
 
 .idea/
+
+# Project-specifiek / mobile signing
+*.keystore
+*.jks
+
+# Mac/VS Code rommel
+.DS_Store
+.vscode/
