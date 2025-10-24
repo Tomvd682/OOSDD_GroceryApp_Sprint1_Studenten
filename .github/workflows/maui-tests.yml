@@ -1,4 +1,4 @@
-name: MAUI Unit Tests
+name: .NET Unit Tests (No MAUI)
 
 on:
   push:
@@ -12,21 +12,20 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Haal de repository op
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Installeer .NET SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # Let op: GEEN MAUI workload installeren
+      # Belangrijk: test alleen het testproject (géén MAUI projecten!)
+      - name: Restore test project
+        run: dotnet restore "./Grocery.Tests/Grocery.Tests.csproj"
 
-      - name: Restore alleen testproject (net8.0)
-        run: dotnet restore ./Grocery.Tests/Grocery.Tests.csproj --framework net8.0
+      - name: Build test project
+        run: dotnet build "./Grocery.Tests/Grocery.Tests.csproj" --configuration Release --no-restore
 
-      - name: Build tests (Release, net8.0)
-        run: dotnet build ./Grocery.Tests/Grocery.Tests.csproj -c Release -f net8.0 --no-restore
-
-      - name: Run tests (Release, net8.0)
-        run: dotnet test ./Grocery.Tests/Grocery.Tests.csproj -c Release -f net8.0 --no-build --verbosity normal
+      - name: Run unit tests
+        run: dotnet test "./Grocery.Tests/Grocery.Tests.csproj" --configuration Release --no-build --verbosity normal
